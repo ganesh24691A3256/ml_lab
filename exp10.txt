@@ -1,0 +1,42 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+
+np.random.seed(0)
+
+X = np.linspace(-3, 3, 100).reshape(-1, 1)
+
+y = np.sin(X).flatten() + np.random.normal(0, 0.2, 100)
+
+def lwr(x, X, y, tau=0.3):
+    m = len(X)
+
+    W = np.exp(-((X.flatten() - x)**2) / (2 * tau**2))
+
+    W = np.diag(W)
+
+    X_new = np.hstack((np.ones((m, 1)), X))
+
+    theta = np.linalg.pinv(X_new.T @ W @ X_new) @ (
+        X_new.T @ W @ y
+    )
+
+    return np.array([1, x]) @ theta
+
+y_lwr = np.array([lwr(x, X, y) for x in X.flatten()])
+
+model = LinearRegression()
+model.fit(X, y)
+
+y_linear = model.predict(X)
+
+plt.scatter(X, y, label="Data")
+plt.plot(X, y_lwr, label="LWR")
+plt.plot(X, y_linear, label="Linear Regression")
+
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.title("LWR vs Linear Regression")
+
+plt.legend()
+plt.show()
