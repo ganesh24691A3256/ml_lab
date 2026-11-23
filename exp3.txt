@@ -1,0 +1,39 @@
+import math
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+
+data = {
+    'Outlook': ['Sunny','Sunny','Overcast','Rain','Rain',
+                'Rain','Overcast','Sunny','Sunny','Rain'],
+    'Temperature': ['Hot','Hot','Hot','Mild','Cool',
+                    'Cool','Cool','Mild','Cool','Mild'],
+    'Humidity': ['High','High','High','High','Normal',
+                 'Normal','Normal','High','Normal','Normal'],
+    'Windy': ['False','True','False','False','False',
+              'True','True','False','False','False'],
+    'Play': ['No','No','Yes','Yes','Yes','No',
+             'Yes','No','Yes','Yes']
+}
+
+df = pd.DataFrame(data)
+
+X = pd.get_dummies(df.drop('Play', axis=1))
+y = df['Play']
+
+from sklearn.tree import DecisionTreeClassifier
+
+model = DecisionTreeClassifier(criterion='entropy')
+model.fit(X, y)
+
+print("Decision Tree Accuracy:", model.score(X, y))
+
+test = pd.DataFrame([{
+    'Outlook': 'Overcast',
+    'Temperature': 'Hot',
+    'Humidity': 'High',
+    'Windy': 'False'
+}])
+
+test = pd.get_dummies(test).reindex(columns=X.columns, fill_value=0)
+
+print("Prediction:", model.predict(test))
